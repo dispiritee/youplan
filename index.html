@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Смотри YouTube</title>
+  <style>
+    body {
+      background-color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+      color: #b00020;
+      text-align: center;
+      padding: 40px;
+    }
+
+    h1 {
+      font-size: 2em;
+      margin-bottom: 20px;
+    }
+
+    input[type="text"] {
+      width: 60%;
+      padding: 12px 20px;
+      border: 2px solid #b00020;
+      border-radius: 10px;
+      font-size: 16px;
+      transition: 0.3s ease;
+      outline: none;
+    }
+
+    input[type="text"]:focus {
+      box-shadow: 0 0 10px rgba(176, 0, 32, 0.4);
+      border-color: #ff1744;
+    }
+
+    button {
+      padding: 12px 24px;
+      background-color: #b00020;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 10px;
+      margin-left: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #ff1744;
+    }
+
+    .video-container {
+      margin-top: 40px;
+      animation: fadeIn 0.8s ease-in-out;
+    }
+
+    video {
+      width: 80%;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Смотри YouTube Видео</h1>
+  <input type="text" id="urlInput" placeholder="Вставь ссылку на видео YouTube">
+  <button onclick="loadVideo()">Смотреть</button>
+
+  <div class="video-container" id="videoContainer" style="display: none;">
+    <video controls autoplay id="videoPlayer">
+      <source id="videoSource" src="" type="video/mp4">
+      Ваш браузер не поддерживает видео.
+    </video>
+  </div>
+
+  <script>
+    function loadVideo() {
+      const url = document.getElementById("urlInput").value;
+      if (!url) return;
+
+      const encodedUrl = encodeURIComponent(url);
+      const videoSrc = `http://127.0.0.1:8000/stream?url=${encodedUrl}`;
+
+      const video = document.getElementById("videoPlayer");
+      const source = document.getElementById("videoSource");
+
+      source.src = videoSrc;
+      video.load();
+
+      document.getElementById("videoContainer").style.display = "block";
+    }
+  </script>
+
+</body>
+</html>
