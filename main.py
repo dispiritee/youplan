@@ -1,6 +1,6 @@
-from fastapi import FastAPI
-from fastapi.responses import HTMLResponse, StreamingResponse
-import subprocess
+from fastapi import FastAPI, Request
+from fastapi.responses import HTMLResponse, RedirectResponse
+from yt_dlp import YoutubeDL
 
 app = FastAPI()
 
@@ -11,6 +11,22 @@ async def index():
 
 @app.get("/stream")
 async def stream_video(url: str):
-    cmd = ["yt-dlp", "-f", "best", "-o", "-", url]
-    process = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-    return StreamingResponse(process.stdout, media_type="video/mp4")
+    ydl_opts = {
+        'quiet': True,
+        'no_warnings': True,
+        'skip_download': True,
+        'format': 'best[ext=mp4]/best',
+    }
+
+    try:
+        with YoutubeDL(ydl_opts) as ydl:
+            info = ydl.extract_info(url, download=False)
+            direct_url = info.get("url")
+
+            if not direct_url:
+                return HTMLResponse("Не удалось получить ссылку на видео", status_code=500)
+
+            return RedirectResponse(direct_url)
+
+    except Exception as e:
+        return HTMLResponse(f"Ошибка: {str(e)}", status_code=500)
